@@ -220,6 +220,7 @@ namespace JaiSeqX.JAI.Types.WSYS
                         Helpers.AFCtoPCM16(adpcm, o_Wave.sampleRate, (int)o_Wave.w_size,o_Wave.format, o_Wave.pcmpath);
                     }
 
+                    Console.WriteLine(name); //Hack HAck hack
 
                 }
 

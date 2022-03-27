@@ -41,9 +41,16 @@ namespace JaiSeqX.Player
             Events.Run(); // Start the drawing / event loop
         }
         private static void KeyDown(object sender, KeyboardEventArgs kbe) 
-        {
+        {                   // `, 1, 2, 3, 4, 5, 6, 7, 8, 9, q, w, e, r, t, y, u
+            int[] keyOrder = {96, 49, 50, 51, 52, 53, 54, 55, 56, 57, 113, 119, 101, 114, 116, 121, 117};
+            //var channel = (byte)kbe.Key - 97; // "A" , 97 is A. the alphabet continues upward in sequence, so any other letter above that will give us a range in A.
+
+            var channel = -1;
+            if (Array.IndexOf(keyOrder, (byte)kbe.Key) != -1)
+            {
+                channel = Array.IndexOf(keyOrder, (byte)kbe.Key);
+            }
             
-            var channel = (byte)kbe.Key - 97; // "A" , 97 is A. the alphabet continues upward in sequence, so any other letter above that will give us a range in A.
             Console.WriteLine("key {0}",channel);
             if (channel == -79)
             {

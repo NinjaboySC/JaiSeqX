@@ -25,7 +25,7 @@ namespace JaiSeqX
         {
 
          
-
+/*
 #if DEBUG
             args = new string[4];
             args[0] = "visu";
@@ -33,7 +33,7 @@ namespace JaiSeqX
             args[2] = "1";
             args[3] = "0001.bms";
 #endif
-          
+          */
             if (args.Length > 0)
             {
                 if (args[0] == "mkjasm")
