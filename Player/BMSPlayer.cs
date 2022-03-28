@@ -34,7 +34,8 @@ namespace JaiSeqX.Player
         static AABase AAF;
         private static Stopwatch tickTimer;
         private static int allticks = 0;
-               
+
+        public static bool startTrack = false; // hack hack hack 
 
 
         public static void LoadBMS(string file, ref AABase AudioData)
@@ -91,6 +92,7 @@ namespace JaiSeqX.Player
         {
             tickTimer.Start();
             Engine.Init();  // Initialize the audio engine
+            //while (startTrack == false) { }
             while (true)
             {
                 trySequencerTick();
@@ -102,17 +104,50 @@ namespace JaiSeqX.Player
         {
             var ts = tickTimer.ElapsedMilliseconds;
             var tt_n = ts / ticklen;
-            while (allticks < tt_n) { 
-                try
+            var totalTick = 0;
+            while (allticks < tt_n) {
+                if (totalTick == 0 && startTrack == false)
                 {
-                    tt_n = ts / ticklen; // whoops, update timing every tick just in case timing changes.
-                    sequencerTick(); // run the sequencer tick. 
-                                     // Just going to leave this for timing.
+                    try
+                    {
+
+                        tt_n = ts / ticklen; // whoops, update timing every tick just in case timing changes.
+                        sequencerTick(); // run the sequencer tick. 
+                                         // Just going to leave this for timing.
+                        Console.WriteLine("Tick");
+                        totalTick++;
+                        tickTimer.Stop();
+                    }
+                    catch (Exception E)
+                    {
+                        Console.WriteLine("SEQUENCER MISSED TICK");
+                        Console.WriteLine(E.ToString());
+                    }
                 }
-                catch (Exception E)
+                else
                 {
-                    Console.WriteLine("SEQUENCER MISSED TICK");
-                    Console.WriteLine(E.ToString());
+                    if (startTrack == false)
+                    {
+                        while (Console.ReadKey().Key != ConsoleKey.Spacebar) { }
+                        startTrack = true;
+                        tickTimer.Start();
+                    }
+                    {
+                        try
+                        {
+
+                            tt_n = ts / ticklen; // whoops, update timing every tick just in case timing changes.
+                            sequencerTick(); // run the sequencer tick. 
+                                             // Just going to leave this for timing.
+                            Console.WriteLine("Tick2");
+                            totalTick++;
+                        }
+                        catch (Exception E)
+                        {
+                            Console.WriteLine("SEQUENCER MISSED TICK");
+                            Console.WriteLine(E.ToString());
+                        }
+                    }
                 }
             }
         }
@@ -120,8 +155,8 @@ namespace JaiSeqX.Player
         {
         
             allticks++;
-  
-     
+
+
             ChannelManager.onTick();
             for (int csub = 0; csub < subroutine_count; csub++)
             {
@@ -131,6 +166,8 @@ namespace JaiSeqX.Player
                     continue; // skip over this one.
                 }
                 var current_state = current_subroutine.State; // Just for helper
+
+
                 while (current_state.delay < 1 & halts[csub]==false) // we want to go until there's a delay. A delay counts as a BREAK command, all other commands are executed inline. 
                 {
                     updated[csub] = 3;
@@ -213,6 +250,10 @@ namespace JaiSeqX.Player
                                                     sound.mPitchBendBase = (float)real_pitch;
                                                     sound.Pan = pans[csub];
                                                     ChannelManager.startVoice(sound, (byte)csub, current_state.voice);
+
+                                                   // while (startTrack == false && Console.ReadKey().Key != ConsoleKey.Spacebar) { }
+                                                    //startTrack = true; //not
+
                                                     if (!mutes[csub]) // The sounds are created, so they're still startable even if they're not used. 
                                                     {
                                                         sound.Play();
@@ -249,9 +290,11 @@ namespace JaiSeqX.Player
                             }
                         case JaiEventType.NEW_TRACK:
                             {
+                                Console.WriteLine("Add New Track");
                                 var ns = new Subroutine(ref BMSData, current_state.track_address);
                                 subroutines[subroutine_count] = ns;
                                 subroutine_count++;
+                                Console.WriteLine("Subroutine Count: " + subroutine_count);
                                 break;
                             }
                         case JaiEventType.HALT:
