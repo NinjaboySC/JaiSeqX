@@ -36,7 +36,8 @@ namespace JaiSeqX.Player
         private static int allticks = 0;
 
         public static bool startTrack = false; // hack hack hack 
-
+        public static bool traceTicks = false;
+       
 
         public static void LoadBMS(string file, ref AABase AudioData)
         {
@@ -114,7 +115,11 @@ namespace JaiSeqX.Player
                         tt_n = ts / ticklen; // whoops, update timing every tick just in case timing changes.
                         sequencerTick(); // run the sequencer tick. 
                                          // Just going to leave this for timing.
-                        Console.WriteLine("Tick");
+                        if (traceTicks == true)
+                        {
+                            Console.WriteLine("Tick");
+                        }
+                        
                         totalTick++;
                         tickTimer.Stop();
                     }
@@ -139,7 +144,10 @@ namespace JaiSeqX.Player
                             tt_n = ts / ticklen; // whoops, update timing every tick just in case timing changes.
                             sequencerTick(); // run the sequencer tick. 
                                              // Just going to leave this for timing.
-                            Console.WriteLine("Tick2");
+                            if (traceTicks == true)
+                            {
+                                Console.WriteLine("Tick2");
+                            }
                             totalTick++;
                         }
                         catch (Exception E)
@@ -151,6 +159,8 @@ namespace JaiSeqX.Player
                 }
             }
         }
+
+
         private static void sequencerTick()
         {
         
@@ -230,7 +240,8 @@ namespace JaiSeqX.Player
                                                 if (wsys != null)
                                                 {
                                                     var wave = wsys.waves[waveid];
-                                                    var sound = ChannelManager.loadSound(wave.pcmpath,wave.loop,wave.loop_start,wave.loop_end).CreateInstance();
+                                                    var sound = ChannelManager.loadSound(wave.pcmpath,wave.loop,wave.loop_start,wave.loop_end,csub).CreateInstance();
+                                                   
                                                     var pmul = program.Pitch * key.Pitch;
                                                     var vmul = program.Volume * key.Volume;
                                                     //Console.WriteLine(pmul);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JaiSeqX.Player.BassBuff;
+using System.IO;
 
 namespace JaiSeqX.Player
 {
@@ -199,7 +200,13 @@ namespace JaiSeqX.Player
         }
 
 
-      
+        private static void writeChannelWaveInfo(string path, int channel)
+        {
+            using (StreamWriter outputFile = new StreamWriter("BMSwavs.txt", true))
+            {
+                outputFile.WriteLine("channel {1} loads {0}", path, channel);
+            }
+        }
 
         public bool onTick()
         {
@@ -248,7 +255,7 @@ namespace JaiSeqX.Player
 
             return true;
         }
-        public SoundEffect loadSound(string file, bool lo, int ls, int le)
+        public SoundEffect loadSound(string file, bool lo, int ls, int le, int csub)
         {
             for (int i = 0; i < CacheStrings.Length; i++)
             {
@@ -267,8 +274,10 @@ namespace JaiSeqX.Player
 #if DEBUG
             var b = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine("loadSound {0}", file);
+            Console.WriteLine("loadSound {0} for channel {1}", file, csub);
             Console.ForegroundColor = b;
+            writeChannelWaveInfo(file, csub);
+           
 #endif
             CacheStrings[cacheHigh] = file; // otherwise, it's not loaded. so we need to store it in our cache
             Cache[cacheHigh] = new SoundEffect(file, lo, ls, le); // Load the WAV for it.
